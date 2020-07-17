@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public enum GameState
 {
@@ -20,16 +20,23 @@ public class Board : MonoBehaviour
     public FindMatches finder;
     private HintManager hint;
     private Menu menu;
+    private Timer timer;
+    [SerializeField] private TextMeshProUGUI scoreTMP;
+    private int score;
+    [SerializeField] private int goal;
 
     void OnEnable()
     {
         menu = FindObjectOfType<Menu>();
         hint = FindObjectOfType<HintManager>();
         finder = FindObjectOfType<FindMatches>();
+        timer = FindObjectOfType<Timer>();
         tiles = new GameObject[width, height];
         menu.restartBtn.gameObject.SetActive(false);
+        menu.gameOverTMP.text = "Game Over";
         menu.gameOverTMP.gameObject.SetActive(false);
         CreateBoard();
+        score = 0;
     }
 
     private void Update()
@@ -42,7 +49,8 @@ public class Board : MonoBehaviour
     private IEnumerator DisableCo()
     {
         yield return new WaitForSeconds(.8f);
-        this.enabled = false;
+        if(currentState == GameState.move)
+            this.enabled = false;
     }
 
     private void OnDisable()
@@ -54,17 +62,21 @@ public class Board : MonoBehaviour
             {
                 if (tiles[i, j] != null)
                 {
-                        Destroy(tiles[i, j]);
-                        tiles[i, j] = null;
+                    Destroy(tiles[i, j]);
+                    tiles[i, j] = null;
                 }
             }
         }
         hint.RestartTimer();
         hint.ClearPossibleMovesList();
-        if(menu.restartBtn)
+        if (menu.restartBtn)
             menu.restartBtn.gameObject.SetActive(true);
         if (menu.gameOverTMP)
             menu.gameOverTMP.gameObject.SetActive(true);
+        if (timer)
+            timer.enabled = false;
+        if (scoreTMP)
+            scoreTMP.enabled = false;
     }
 
     private void CreateBoard()
@@ -81,11 +93,11 @@ public class Board : MonoBehaviour
                 List<GameObject> possibleDots = new List<GameObject>();
                 possibleDots.AddRange(dots);
 
-                if(previousBelow1 == previousBelow2)
+                if (previousBelow1 == previousBelow2)
                 {
                     possibleDots.Remove(previousBelow1);
                 }
-                if(previousLeft1[j] == previousLeft2[j])
+                if (previousLeft1[j] == previousLeft2[j])
                 {
                     possibleDots.Remove(previousLeft1[j]);
                 }
@@ -112,6 +124,9 @@ public class Board : MonoBehaviour
     {
         yield return new WaitForSeconds(.8f);
         currentState = GameState.move;
+        timer.enabled = true;
+        scoreTMP.text = score + "/" + goal;
+        scoreTMP.enabled = true;
     }
 
     public void DestroyMatches()
@@ -126,6 +141,13 @@ public class Board : MonoBehaviour
                     {
                         Destroy(tiles[i, j]);
                         tiles[i, j] = null;
+                        score++;
+                        UpdateScore();
+                        if(score >= goal)
+                        {
+                            menu.gameOverTMP.text = "You WIN!";
+                            StartCoroutine(DisableCo());
+                        }
                     }
                 }
             }
@@ -208,5 +230,10 @@ public class Board : MonoBehaviour
         }
         yield return new WaitForSeconds(.4f);
         currentState = GameState.move;
+    }
+
+    private void UpdateScore()
+    {
+        scoreTMP.text = score + "/" + goal;
     }
 }

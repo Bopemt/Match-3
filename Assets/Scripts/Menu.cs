@@ -20,7 +20,7 @@ public class Menu : MonoBehaviour
     {
         board = FindObjectOfType<Board>();
         temp = startBtn.transform.position;
-        temp.y -= board.offSet * 20;
+        temp.y -= board.offSet * 35;
     }
 
     private void Update()
