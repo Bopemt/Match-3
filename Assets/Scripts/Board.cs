@@ -42,8 +42,15 @@ public class Board : MonoBehaviour
     private void Update()
     {
         if (currentState == GameState.move)
+        {
             if (finder.IsGameOver())
                 StartCoroutine(DisableCo());
+            if (score >= goal)
+            {
+                menu.gameOverTMP.text = "You WIN!";
+                StartCoroutine(DisableCo());
+            }
+        }
     }
 
     private IEnumerator DisableCo()
@@ -143,11 +150,6 @@ public class Board : MonoBehaviour
                         tiles[i, j] = null;
                         score++;
                         UpdateScore();
-                        if(score >= goal)
-                        {
-                            menu.gameOverTMP.text = "You WIN!";
-                            StartCoroutine(DisableCo());
-                        }
                     }
                 }
             }

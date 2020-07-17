@@ -1377,7 +1377,7 @@ MonoBehaviour:
   offSet: 15
   finder: {fileID: 681862503}
   scoreTMP: {fileID: 444312638}
-  goal: 10
+  goal: 60
 --- !u!4 &1044036925
 Transform:
   m_ObjectHideFlags: 0
@@ -2242,7 +2242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   greenImage: {fileID: 1811174485}
   redImage: {fileID: 1968494257}
-  duration: 10
+  duration: 30
   board: {fileID: 0}
 --- !u!1 &2072070429
 GameObject:
